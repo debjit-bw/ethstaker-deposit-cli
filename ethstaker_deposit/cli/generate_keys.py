@@ -26,6 +26,7 @@ from ethstaker_deposit.utils.constants import (
     DEFAULT_VALIDATOR_KEYS_FOLDER_NAME,
     MIN_ACTIVATION_AMOUNT,
     ETH2GWEI,
+    get_min_activation_amount
 )
 from ethstaker_deposit.utils.ascii_art import RHINO_0
 from ethstaker_deposit.utils.click import (
@@ -135,11 +136,12 @@ def generate_keys_arguments_decorator(function: Callable[..., Any]) -> Callable[
             callback=captive_prompt_callback(
                 lambda amount, **kwargs: validate_deposit_amount(amount, **kwargs),
                 lambda: load_text(['arg_amount', 'prompt'], func='generate_keys_arguments_decorator'),
-                default=str(min_activation_amount_eth),
+                lambda **kwargs: str(get_min_activation_amount(kwargs.get('chain', MAINNET)) // ETH2GWEI),
+                default=lambda **kwargs: str(get_min_activation_amount(kwargs.get('chain', MAINNET)) // ETH2GWEI), 
                 prompt_if=prompt_if_other_value('compounding', True),
                 prompt_marker="amount",
             ),
-            default=str(min_activation_amount_eth),
+            default=str(get_min_activation_amount(MAINNET) // ETH2GWEI),
             help=lambda: load_text(['arg_amount', 'help'], func='generate_keys_arguments_decorator'),
             param_decls='--amount',
             prompt=False,  # the callback handles the prompt

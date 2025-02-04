@@ -19,6 +19,10 @@ ETH2GWEI = 10 ** 9
 MIN_DEPOSIT_AMOUNT = 2 ** 0 * ETH2GWEI
 MIN_ACTIVATION_AMOUNT = 2 ** 5 * ETH2GWEI
 MAX_DEPOSIT_AMOUNT = 2 ** 11 * ETH2GWEI
+CHAIN_MIN_ACTIVATION_OVERRIDES = {
+    'gnosis': 1 * ETH2GWEI,
+    'chiado': 1 * ETH2GWEI,
+}
 
 # File/folder constants
 WORD_LISTS_PATH = os.path.join('ethstaker_deposit', 'key_handling', 'key_derivation', 'word_lists')
@@ -30,6 +34,13 @@ DEFAULT_PARTIAL_DEPOSIT_FOLDER_NAME = 'partial_deposits'
 
 # Internationalisation constants
 INTL_CONTENT_PATH = os.path.join('ethstaker_deposit', 'intl')
+
+def get_min_activation_amount(chain_name: str) -> int:
+    """
+    Returns the minimum activation amount for the specified chain.
+    Defaults to 32 ETH unless overridden for a specific chain.
+    """
+    return CHAIN_MIN_ACTIVATION_OVERRIDES.get(chain_name, MIN_ACTIVATION_AMOUNT)
 
 
 def _add_index_to_options(d: Dict[str, list[str]]) -> Dict[str, list[str]]:
