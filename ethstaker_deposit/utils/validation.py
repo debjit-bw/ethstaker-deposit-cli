@@ -208,6 +208,7 @@ def validate_deposit_amount(amount: str, **kwargs) -> int:
         amount_gwei = decimal_ether * Decimal(ETH2GWEI)
 
         params = kwargs.get('params', {})
+        print('validate deposit amount', params)
         # Gnosis Chain and Chiado need a 32x multiplier on deposits
         # The values range from 0.0325 GNO (represented as 1 ETH) to 64 GNO (represented as 2048 ETH)
         # This validation allows users to enter amount in GNO terms, without causing confusion

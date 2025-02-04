@@ -135,13 +135,13 @@ def generate_keys_arguments_decorator(function: Callable[..., Any]) -> Callable[
         jit_option(
             callback=captive_prompt_callback(
                 lambda amount, **kwargs: validate_deposit_amount(amount, **kwargs),
+                lambda **kwargs: get_min_activation_amount(get_chain(**kwargs)) // ETH2GWEI,
                 lambda: load_text(['arg_amount', 'prompt'], func='generate_keys_arguments_decorator'),
-                lambda **kwargs: str(get_min_activation_amount(kwargs.get('chain', MAINNET)) // ETH2GWEI),
-                default=lambda **kwargs: str(get_min_activation_amount(kwargs.get('chain', MAINNET)) // ETH2GWEI), 
+                lambda: str(get_default_amount(closest_match('', ALL_CHAIN_KEYS))),
                 prompt_if=prompt_if_other_value('compounding', True),
                 prompt_marker="amount",
             ),
-            default=str(get_min_activation_amount(MAINNET) // ETH2GWEI),
+            default=lambda **kwargs: str(get_min_activation_amount(get_chain(**kwargs)) // ETH2GWEI), 
             help=lambda: load_text(['arg_amount', 'help'], func='generate_keys_arguments_decorator'),
             param_decls='--amount',
             prompt=False,  # the callback handles the prompt
@@ -164,6 +164,15 @@ def generate_keys_arguments_decorator(function: Callable[..., Any]) -> Callable[
     for decorator in reversed(decorators):
         function = decorator(function)
     return function
+
+def get_chain(**kwargs) -> str:
+    params = kwargs.get('params', {})
+    print("get chain function", params)
+    if ("chain" in params):
+        return params["chain"]
+    else:
+        return MAINNET
+
 
 
 @click.command()
